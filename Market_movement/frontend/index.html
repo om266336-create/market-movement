@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered market sentiment analysis - Analyze financial news with FinBERT">
+    <title>AI Market Intelligence | Sentiment Analyzer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme">
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <span class="brand-icon">📊</span>
+                <span class="brand-text">AI Market Intelligence</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">
+                    <span>🔍</span> Analyze
+                </a>
+                <a href="/dashboard.html" class="nav-link">
+                    <span>📈</span> Dashboard
+                </a>
+                <a href="/learn.html" class="nav-link">
+                    <span>📚</span> Learn
+                </a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">AI-Powered</span> Market Sentiment Analysis
+                </h1>
+                <p class="hero-subtitle">
+                    Analyze financial news, earnings reports, and market headlines using advanced FinBERT AI technology
+                </p>
+            </div>
+        </section>
+
+        <!-- Main Analyzer -->
+        <main class="analyzer-section">
+            <div class="analyzer-card">
+                <div class="card-header">
+                    <div class="header-icon">🧠</div>
+                    <div class="header-text">
+                        <h2>Sentiment Analyzer</h2>
+                        <p>Paste financial text to analyze market sentiment</p>
+                    </div>
+                </div>
+
+                <form id="analysis-form">
+                    <div class="input-wrapper">
+                        <textarea id="text-input"
+                            placeholder="Paste financial news, earnings reports, or market headlines...
+
+Example: Apple reports record Q4 earnings with iPhone sales exceeding expectations. Revenue grew 15% year-over-year, beating analyst estimates."
+                            required></textarea>
+                        <div class="char-count">
+                            <span id="char-count">0</span> / 512 characters
+                        </div>
+                    </div>
+                    <button type="submit" id="analyze-btn">
+                        <span class="btn-text">🔍 Analyze Sentiment</span>
+                        <span class="btn-loader">
+                            <span class="loader-dot"></span>
+                            <span class="loader-dot"></span>
+                            <span class="loader-dot"></span>
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Results Section -->
+                <div id="results-section" class="results-section" style="display: none;">
+                    <div class="results-header">
+                        <h3>📊 Analysis Results</h3>
+                        <div id="trend-badge" class="trend-badge"></div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card sentiment-card">
+                            <div class="metric-icon">🎯</div>
+                            <div class="metric-label">Sentiment</div>
+                            <div class="metric-value" id="sentiment">--</div>
+                        </div>
+
+                        <div class="metric-card confidence-card">
+                            <div class="metric-icon">📊</div>
+                            <div class="metric-label">Confidence</div>
+                            <div class="metric-value" id="confidence">--%</div>
+                            <div class="metric-sublabel" id="confidence-level">--</div>
+                        </div>
+
+                        <div class="metric-card prediction-card">
+                            <div class="metric-icon">🎲</div>
+                            <div class="metric-label">Prediction</div>
+                            <div class="metric-value" id="prediction">--</div>
+                        </div>
+
+                        <div class="metric-card impact-card">
+                            <div class="metric-icon">⚡</div>
+                            <div class="metric-label">Impact Score</div>
+                            <div class="metric-value" id="impact-score">--</div>
+                            <div class="metric-sublabel" id="impact-level">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Gauge -->
+                    <div class="impact-gauge-container">
+                        <div class="gauge-labels">
+                            <span>-100</span>
+                            <span>Bearish</span>
+                            <span>Neutral</span>
+                            <span>Bullish</span>
+                            <span>+100</span>
+                        </div>
+                        <div class="impact-gauge">
+                            <div class="gauge-fill" id="gauge-fill"></div>
+                            <div class="gauge-marker" id="gauge-marker"></div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insight Box -->
+                    <div class="insight-box">
+                        <div class="insight-header">
+                            <span class="insight-icon">🧠</span>
+                            <h3>AI Investor Insight</h3>
+                        </div>
+                        <p id="ai-insight">--</p>
+                    </div>
+
+                    <!-- Stock Info (if detected) -->
+                    <div id="stock-info" class="stock-info-card" style="display: none;">
+                        <div class="stock-header">
+                            <div>
+                                <h4 id="stock-symbol">AAPL</h4>
+                                <span id="stock-name">Apple Inc.</span>
+                            </div>
+                            <div class="stock-price-info">
+                                <span id="stock-price" class="stock-price">$0.00</span>
+                                <span id="stock-change" class="change-badge positive">+0.00 (0.00%)</span>
+                            </div>
+                        </div>
+                        <a href="/dashboard.html" class="view-dashboard-btn">
+                            View Full Dashboard →
+                        </a>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="results-actions">
+                        <a href="/dashboard.html" class="action-btn primary">
+                            <span>📈</span> View Advanced Analysis
+                        </a>
+                        <button id="export-pdf" class="action-btn">
+                            <span>📄</span> Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Features Preview -->
+        <section class="features-section">
+            <h2>Explore More Features</h2>
+            <div class="features-grid">
+                <a href="/dashboard.html" class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Advanced Dashboard</h3>
+                    <p>Technical indicators, probability charts, and multi-stock comparison</p>
+                </a>
+                <a href="/dashboard.html#technical" class="feature-card">
+                    <div class="feature-icon">📉</div>
+                    <h3>Technical Analysis</h3>
+                    <p>RSI, MACD, Moving Averages, and sentiment overlays</p>
+                </a>
+                <a href="/learn.html" class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Learn Trading</h3>
+                    <p>Stock market basics and sentiment analysis fundamentals</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer with Disclaimer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span>📊</span> AI Market Intelligence
+                </div>
+                <div class="footer-links">
+                    <a href="/">Analyze</a>
+                    <a href="/dashboard.html">Dashboard</a>
+                    <a href="/learn.html">Learn</a>
+                </div>
+            </div>
+            <div class="disclaimer">
+                <p><strong>⚠️ Disclaimer:</strong> This tool is for <strong>educational and informational purposes
+                        only</strong>.
+                    It does not constitute financial advice, investment recommendations, or trading signals.
+                    AI predictions are based on sentiment analysis and may not reflect actual market movements.
+                    Always consult a qualified financial advisor before making investment decisions.
+                    Past performance is not indicative of future results. Trade at your own risk.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with FinBERT AI • Data from Yahoo Finance • © 2024 AI Market Intelligence</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
