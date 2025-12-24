@@ -1,0 +1,8 @@
+flask
+transformers
+torch
+datasets
+yfinance
+gunicorn
+ta
+scipy

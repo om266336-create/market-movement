@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced market analysis dashboard with technical indicators and AI insights">
+    <title>AI Market Intelligence | Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dark-theme">
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <span class="brand-icon">📊</span>
+                <span class="brand-text">AI Market Intelligence</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <span>🔍</span> Analyze
+                </a>
+                <a href="/dashboard.html" class="nav-link active">
+                    <span>📈</span> Dashboard
+                </a>
+                <a href="/learn.html" class="nav-link">
+                    <span>📚</span> Learn
+                </a>
+            </div>
+        </nav>
+
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>📈 Advanced Analysis Dashboard</h1>
+                <p>Technical indicators, probability forecasts, and deep market insights</p>
+            </div>
+            <div class="header-actions">
+                <button id="export-pdf" class="action-btn">
+                    <span>📄</span> Export PDF
+                </button>
+                <button id="export-csv" class="action-btn">
+                    <span>📊</span> Export CSV
+                </button>
+            </div>
+        </header>
+
+        <!-- Stock Search -->
+        <section class="search-section">
+            <div class="search-container">
+                <input type="text" id="stock-search" placeholder="Enter stock symbol (e.g., AAPL, MSFT, GOOGL)..."
+                    class="search-input">
+                <button id="search-btn" class="search-btn">
+                    <span>🔍</span> Analyze
+                </button>
+            </div>
+            <div class="quick-symbols">
+                <span>Popular:</span>
+                <button class="symbol-chip" data-symbol="AAPL">AAPL</button>
+                <button class="symbol-chip" data-symbol="MSFT">MSFT</button>
+                <button class="symbol-chip" data-symbol="GOOGL">GOOGL</button>
+                <button class="symbol-chip" data-symbol="TSLA">TSLA</button>
+                <button class="symbol-chip" data-symbol="NVDA">NVDA</button>
+                <button class="symbol-chip" data-symbol="AMZN">AMZN</button>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-grid">
+            <!-- Left Column -->
+            <div class="dashboard-column">
+                <!-- Stock Overview Card -->
+                <div class="panel stock-overview-panel">
+                    <div class="panel-header">
+                        <h2 id="current-symbol">Select a Stock</h2>
+                        <span id="current-name" class="stock-name">Enter a symbol above to begin</span>
+                    </div>
+                    <div id="stock-overview" class="stock-overview">
+                        <div class="price-display">
+                            <span id="stock-price" class="big-price">$--</span>
+                            <span id="stock-change" class="change-badge">-- (--)</span>
+                        </div>
+                        <div class="period-buttons">
+                            <button class="period-btn active" data-period="1d">1D</button>
+                            <button class="period-btn" data-period="1wk">1W</button>
+                            <button class="period-btn" data-period="1mo">1M</button>
+                            <button class="period-btn" data-period="6mo">6M</button>
+                            <button class="period-btn" data-period="1y">1Y</button>
+                        </div>
+                        <div class="stock-chart-container">
+                            <canvas id="stock-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Indicators -->
+                <div class="panel technical-panel" id="technical">
+                    <div class="panel-header">
+                        <h2>📉 Technical Indicators</h2>
+                    </div>
+                    <div class="indicators-grid">
+                        <div class="indicator-card">
+                            <div class="indicator-header">
+                                <span class="indicator-name">RSI (14)</span>
+                                <span id="rsi-value" class="indicator-value">--</span>
+                            </div>
+                            <div class="rsi-gauge">
+                                <div class="rsi-zones">
+                                    <span class="zone oversold">Oversold</span>
+                                    <span class="zone neutral">Neutral</span>
+                                    <span class="zone overbought">Overbought</span>
+                                </div>
+                                <div class="rsi-bar">
+                                    <div id="rsi-marker" class="rsi-marker" style="left: 50%;"></div>
+                                </div>
+                                <div class="rsi-labels">
+                                    <span>0</span>
+                                    <span>30</span>
+                                    <span>70</span>
+                                    <span>100</span>
+                                </div>
+                            </div>
+                            <div id="rsi-signal" class="indicator-signal neutral">Neutral</div>
+                        </div>
+
+                        <div class="indicator-card">
+                            <div class="indicator-header">
+                                <span class="indicator-name">MACD</span>
+                                <span id="macd-value" class="indicator-value">--</span>
+                            </div>
+                            <div class="macd-info">
+                                <div class="macd-row">
+                                    <span>Signal Line:</span>
+                                    <span id="macd-signal-value">--</span>
+                                </div>
+                                <div class="macd-row">
+                                    <span>Histogram:</span>
+                                    <span id="macd-histogram">--</span>
+                                </div>
+                            </div>
+                            <div id="macd-signal" class="indicator-signal neutral">Neutral</div>
+                        </div>
+
+                        <div class="indicator-card full-width">
+                            <div class="indicator-header">
+                                <span class="indicator-name">Moving Averages</span>
+                            </div>
+                            <div class="ma-grid">
+                                <div class="ma-item">
+                                    <span class="ma-label">MA 20</span>
+                                    <span id="ma20-value" class="ma-value">--</span>
+                                    <span id="ma20-signal" class="ma-signal">--</span>
+                                </div>
+                                <div class="ma-item">
+                                    <span class="ma-label">MA 50</span>
+                                    <span id="ma50-value" class="ma-value">--</span>
+                                    <span id="ma50-signal" class="ma-signal">--</span>
+                                </div>
+                                <div class="ma-item">
+                                    <span class="ma-label">MA 200</span>
+                                    <span id="ma200-value" class="ma-value">--</span>
+                                    <span id="ma200-signal" class="ma-signal">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="dashboard-column">
+                <!-- Probability Forecast -->
+                <div class="panel probability-panel">
+                    <div class="panel-header">
+                        <h2>🎲 Price Movement Probability</h2>
+                    </div>
+                    <div class="probability-container">
+                        <div class="probability-bar">
+                            <div class="prob-label">
+                                <span class="prob-icon">📈</span> Bullish
+                            </div>
+                            <div class="prob-track">
+                                <div id="prob-bullish" class="prob-fill bullish" style="width: 33%;"></div>
+                            </div>
+                            <span id="prob-bullish-value" class="prob-value">33%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="prob-label">
+                                <span class="prob-icon">➡️</span> Neutral
+                            </div>
+                            <div class="prob-track">
+                                <div id="prob-neutral" class="prob-fill neutral" style="width: 34%;"></div>
+                            </div>
+                            <span id="prob-neutral-value" class="prob-value">34%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="prob-label">
+                                <span class="prob-icon">📉</span> Bearish
+                            </div>
+                            <div class="prob-track">
+                                <div id="prob-bearish" class="prob-fill bearish" style="width: 33%;"></div>
+                            </div>
+                            <span id="prob-bearish-value" class="prob-value">33%</span>
+                        </div>
+                    </div>
+                    <div class="outlook-grid">
+                        <div class="outlook-card">
+                            <span class="outlook-period">Short-Term (1-7 days)</span>
+                            <span id="outlook-short" class="outlook-value">--</span>
+                        </div>
+                        <div class="outlook-card">
+                            <span class="outlook-period">Mid-Term (1-3 months)</span>
+                            <span id="outlook-mid" class="outlook-value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keywords Analysis -->
+                <div class="panel keywords-panel">
+                    <div class="panel-header">
+                        <h2>🔑 Keyword Analysis</h2>
+                    </div>
+                    <div class="keywords-container">
+                        <div class="keywords-section">
+                            <h4>✅ Bullish Signals</h4>
+                            <div id="bullish-keywords" class="keyword-tags">
+                                <span class="keyword-tag bullish">growth</span>
+                                <span class="keyword-tag bullish">revenue</span>
+                                <span class="keyword-tag bullish">profit</span>
+                            </div>
+                        </div>
+                        <div class="keywords-section">
+                            <h4>❌ Bearish Signals</h4>
+                            <div id="bearish-keywords" class="keyword-tags">
+                                <span class="keyword-tag bearish">risk</span>
+                                <span class="keyword-tag bearish">decline</span>
+                                <span class="keyword-tag bearish">loss</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sentiment Sources -->
+                <div class="panel sources-panel">
+                    <div class="panel-header">
+                        <h2>📰 Sentiment Sources</h2>
+                    </div>
+                    <div class="source-tabs">
+                        <button class="source-tab active" data-source="news">📰 News</button>
+                        <button class="source-tab" data-source="twitter">𝕏 Twitter</button>
+                        <button class="source-tab" data-source="reddit">🔴 Reddit</button>
+                        <button class="source-tab" data-source="sec">📋 SEC</button>
+                    </div>
+                    <div class="source-content">
+                        <div id="source-news" class="source-panel active">
+                            <div class="sentiment-meter">
+                                <span class="meter-label">News Sentiment</span>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 65%; background: var(--success);"></div>
+                                </div>
+                                <span class="meter-value">65% Positive</span>
+                            </div>
+                            <p class="source-note">Based on recent financial news analysis</p>
+                        </div>
+                        <div id="source-twitter" class="source-panel">
+                            <div class="sentiment-meter">
+                                <span class="meter-label">Social Sentiment</span>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 55%; background: var(--warning);"></div>
+                                </div>
+                                <span class="meter-value">55% Positive</span>
+                            </div>
+                            <p class="source-note">Aggregated from Twitter/X mentions</p>
+                        </div>
+                        <div id="source-reddit" class="source-panel">
+                            <div class="sentiment-meter">
+                                <span class="meter-label">Reddit Sentiment</span>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 70%; background: var(--success);"></div>
+                                </div>
+                                <span class="meter-value">70% Positive</span>
+                            </div>
+                            <p class="source-note">From r/stocks, r/investing, r/wallstreetbets</p>
+                        </div>
+                        <div id="source-sec" class="source-panel">
+                            <div class="sentiment-meter">
+                                <span class="meter-label">SEC Filings</span>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 50%; background: var(--warning);"></div>
+                                </div>
+                                <span class="meter-value">Neutral</span>
+                            </div>
+                            <p class="source-note">Based on recent 10-K, 10-Q, 8-K filings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explainability Panel -->
+                <div class="panel explainability-panel">
+                    <div class="panel-header">
+                        <h2>🧠 Why This Sentiment?</h2>
+                    </div>
+                    <div class="explainability-content">
+                        <div class="model-info">
+                            <div class="info-row">
+                                <span class="info-label">Model</span>
+                                <span class="info-value">FinBERT v1.0</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Last Updated</span>
+                                <span id="data-freshness" class="info-value">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Data Sources</span>
+                                <span class="info-value">Yahoo Finance, News API</span>
+                            </div>
+                        </div>
+                        <div class="confidence-explanation">
+                            <h4>Confidence Breakdown</h4>
+                            <p id="confidence-explanation">Enter a stock symbol to see detailed analysis...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Stock Comparison Section -->
+        <section class="comparison-section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>⚖️ Stock Comparison</h2>
+                    <button id="add-comparison" class="add-btn">+ Add Stock</button>
+                </div>
+                <div id="comparison-container" class="comparison-grid">
+                    <div class="comparison-empty">
+                        <p>Add stocks above to compare their sentiment and technical indicators</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer with Disclaimer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span>📊</span> AI Market Intelligence
+                </div>
+                <div class="footer-links">
+                    <a href="/">Analyze</a>
+                    <a href="/dashboard.html">Dashboard</a>
+                    <a href="/learn.html">Learn</a>
+                </div>
+            </div>
+            <div class="disclaimer">
+                <p><strong>⚠️ Disclaimer:</strong> This tool is for <strong>educational and informational purposes
+                        only</strong>.
+                    It does not constitute financial advice, investment recommendations, or trading signals.
+                    AI predictions are based on sentiment analysis and may not reflect actual market movements.
+                    Always consult a qualified financial advisor before making investment decisions.
+                    Past performance is not indicative of future results. Trade at your own risk.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with FinBERT AI • Data from Yahoo Finance • © 2024 AI Market Intelligence</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn stock market basics, trading fundamentals, and sentiment analysis">
+    <title>AI Market Intelligence | Learn Trading</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme">
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <span class="brand-icon">📊</span>
+                <span class="brand-text">AI Market Intelligence</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <span>🔍</span> Analyze
+                </a>
+                <a href="/dashboard.html" class="nav-link">
+                    <span>📈</span> Dashboard
+                </a>
+                <a href="/learn.html" class="nav-link active">
+                    <span>📚</span> Learn
+                </a>
+            </div>
+        </nav>
+
+        <!-- Learn Hero -->
+        <header class="learn-hero">
+            <h1>📚 Stock Market Academy</h1>
+            <p>Master the fundamentals of investing and sentiment analysis</p>
+        </header>
+
+        <!-- Topics Grid -->
+        <main class="learn-content">
+            <aside class="learn-sidebar">
+                <h3>Topics</h3>
+                <nav class="topic-nav">
+                    <a href="#basics" class="topic-link active">📊 Market Basics</a>
+                    <a href="#stocks" class="topic-link">📈 Understanding Stocks</a>
+                    <a href="#charts" class="topic-link">📉 Reading Charts</a>
+                    <a href="#sentiment" class="topic-link">🧠 Sentiment Analysis</a>
+                    <a href="#technical" class="topic-link">📐 Technical Indicators</a>
+                    <a href="#risk" class="topic-link">⚠️ Risk Management</a>
+                    <a href="#glossary" class="topic-link">📖 Glossary</a>
+                </nav>
+            </aside>
+
+            <div class="learn-articles">
+                <!-- Market Basics -->
+                <article id="basics" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">📊</span>
+                        <div>
+                            <h2>Stock Market Basics</h2>
+                            <span class="article-meta">5 min read • Beginner</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>The stock market is a collection of exchanges where stocks (pieces of ownership in
+                            businesses) are bought and sold. It's one of the most vital components of a free-market
+                            economy.</p>
+
+                        <h3>How Does It Work?</h3>
+                        <p>Companies list shares of their stock on an exchange through a process called an Initial
+                            Public Offering (IPO). Investors can then buy and sell these shares among themselves, and
+                            the exchange tracks the supply and demand of each listed stock.</p>
+
+                        <div class="info-box">
+                            <h4>💡 Key Concept</h4>
+                            <p>Stock prices are determined by supply and demand. When more people want to buy a stock
+                                (demand) than sell it (supply), the price goes up. The opposite is also true.</p>
+                        </div>
+
+                        <h3>Major Stock Exchanges</h3>
+                        <ul class="styled-list">
+                            <li><strong>NYSE (New York Stock Exchange)</strong> - The largest stock exchange in the
+                                world by market capitalization</li>
+                            <li><strong>NASDAQ</strong> - Known for technology stocks like Apple, Microsoft, and Google
+                            </li>
+                            <li><strong>LSE (London Stock Exchange)</strong> - One of the oldest exchanges in the world
+                            </li>
+                        </ul>
+
+                        <h3>Market Hours</h3>
+                        <p>The US stock market is open Monday through Friday from 9:30 AM to 4:00 PM Eastern Time.
+                            There's also pre-market trading (4:00-9:30 AM) and after-hours trading (4:00-8:00 PM).</p>
+                    </div>
+                </article>
+
+                <!-- Understanding Stocks -->
+                <article id="stocks" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">📈</span>
+                        <div>
+                            <h2>Understanding Stocks</h2>
+                            <span class="article-meta">7 min read • Beginner</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>A stock represents partial ownership in a company. When you buy a stock, you're buying a
+                            small piece of that company, called a "share."</p>
+
+                        <h3>Types of Stocks</h3>
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h4>🔵 Common Stock</h4>
+                                <p>Most typical form of stock. Gives voting rights and potential dividends, but you're
+                                    last in line for assets if the company goes bankrupt.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>🟣 Preferred Stock</h4>
+                                <p>Usually no voting rights, but you get dividends before common stockholders and have
+                                    higher claim on assets.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>🟢 Growth Stocks</h4>
+                                <p>Companies expected to grow faster than average. They typically reinvest profits
+                                    rather than paying dividends.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>🟡 Value Stocks</h4>
+                                <p>Stocks trading below their intrinsic value. Often pay dividends and are considered
+                                    undervalued by the market.</p>
+                            </div>
+                        </div>
+
+                        <h3>Key Stock Metrics</h3>
+                        <table class="info-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>What It Means</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Market Cap</strong></td>
+                                    <td>Total value of all shares (Share Price × Shares Outstanding)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>P/E Ratio</strong></td>
+                                    <td>Price-to-Earnings ratio - how much you pay per dollar of earnings</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>EPS</strong></td>
+                                    <td>Earnings Per Share - company's profit divided by shares outstanding</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dividend Yield</strong></td>
+                                    <td>Annual dividend payment as percentage of stock price</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <!-- Reading Charts -->
+                <article id="charts" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">📉</span>
+                        <div>
+                            <h2>Reading Stock Charts</h2>
+                            <span class="article-meta">8 min read • Intermediate</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>Stock charts visually represent price movements over time. Understanding how to read them is
+                            essential for making informed investment decisions.</p>
+
+                        <h3>Chart Types</h3>
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h4>📈 Line Chart</h4>
+                                <p>Simplest form - connects closing prices over time. Good for seeing overall trends.
+                                </p>
+                            </div>
+                            <div class="info-card">
+                                <h4>📊 Bar Chart</h4>
+                                <p>Shows open, high, low, and close (OHLC) for each period. More detailed than line
+                                    charts.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>🕯️ Candlestick</h4>
+                                <p>Most popular among traders. Shows OHLC with color-coded bodies (green=up, red=down).
+                                </p>
+                            </div>
+                        </div>
+
+                        <h3>Key Chart Patterns</h3>
+                        <div class="pattern-list">
+                            <div class="pattern-item">
+                                <span class="pattern-name">📈 Uptrend</span>
+                                <span class="pattern-desc">Higher highs and higher lows - bullish signal</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-name">📉 Downtrend</span>
+                                <span class="pattern-desc">Lower highs and lower lows - bearish signal</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-name">➡️ Support</span>
+                                <span class="pattern-desc">Price level where buying pressure prevents further
+                                    decline</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-name">⬆️ Resistance</span>
+                                <span class="pattern-desc">Price level where selling pressure prevents further
+                                    rise</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Sentiment Analysis -->
+                <article id="sentiment" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">🧠</span>
+                        <div>
+                            <h2>Sentiment Analysis</h2>
+                            <span class="article-meta">6 min read • Intermediate</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>Sentiment analysis uses natural language processing (NLP) and machine learning to determine
+                            the emotional tone of text. In finance, it helps predict market movements based on news and
+                            social media.</p>
+
+                        <h3>How AI Sentiment Analysis Works</h3>
+                        <ol class="styled-list numbered">
+                            <li><strong>Data Collection</strong> - Gather news articles, social media posts, SEC filings
+                            </li>
+                            <li><strong>Text Processing</strong> - Clean and tokenize the text</li>
+                            <li><strong>Model Analysis</strong> - AI model (like FinBERT) classifies sentiment</li>
+                            <li><strong>Score Generation</strong> - Output positive, negative, or neutral with
+                                confidence</li>
+                        </ol>
+
+                        <div class="info-box success">
+                            <h4>🎯 What is FinBERT?</h4>
+                            <p>FinBERT is a specialized AI model trained on financial text. It understands financial
+                                terminology and context better than general-purpose sentiment models. This is what
+                                powers our analysis tool!</p>
+                        </div>
+
+                        <h3>Sentiment Indicators</h3>
+                        <table class="info-table">
+                            <thead>
+                                <tr>
+                                    <th>Sentiment</th>
+                                    <th>Market Signal</th>
+                                    <th>Example Keywords</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="bullish-text"><strong>Bullish</strong></td>
+                                    <td>Potential price increase</td>
+                                    <td>growth, profit, beat, surge, record</td>
+                                </tr>
+                                <tr>
+                                    <td class="bearish-text"><strong>Bearish</strong></td>
+                                    <td>Potential price decrease</td>
+                                    <td>loss, decline, miss, layoff, risk</td>
+                                </tr>
+                                <tr>
+                                    <td class="neutral-text"><strong>Neutral</strong></td>
+                                    <td>No clear direction</td>
+                                    <td>maintain, steady, unchanged, hold</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <!-- Technical Indicators -->
+                <article id="technical" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">📐</span>
+                        <div>
+                            <h2>Technical Indicators</h2>
+                            <span class="article-meta">10 min read • Intermediate</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>Technical indicators are mathematical calculations based on price, volume, or open interest.
+                            They help predict future price movements.</p>
+
+                        <h3>Popular Indicators</h3>
+
+                        <div class="indicator-explainer">
+                            <h4>📊 RSI (Relative Strength Index)</h4>
+                            <p>Measures the speed and magnitude of price movements on a scale of 0-100.</p>
+                            <ul class="styled-list">
+                                <li><strong>Above 70:</strong> Overbought - stock may be overvalued</li>
+                                <li><strong>Below 30:</strong> Oversold - stock may be undervalued</li>
+                                <li><strong>50 area:</strong> Neutral territory</li>
+                            </ul>
+                        </div>
+
+                        <div class="indicator-explainer">
+                            <h4>📈 MACD (Moving Average Convergence Divergence)</h4>
+                            <p>Shows the relationship between two moving averages of a stock's price.</p>
+                            <ul class="styled-list">
+                                <li><strong>MACD crosses above signal line:</strong> Bullish signal</li>
+                                <li><strong>MACD crosses below signal line:</strong> Bearish signal</li>
+                            </ul>
+                        </div>
+
+                        <div class="indicator-explainer">
+                            <h4>📉 Moving Averages (MA)</h4>
+                            <p>Smooths out price data to identify trends.</p>
+                            <ul class="styled-list">
+                                <li><strong>MA 20:</strong> Short-term trend (20 days)</li>
+                                <li><strong>MA 50:</strong> Medium-term trend (50 days)</li>
+                                <li><strong>MA 200:</strong> Long-term trend (200 days)</li>
+                                <li><strong>Golden Cross:</strong> 50-day MA crosses above 200-day (bullish)</li>
+                                <li><strong>Death Cross:</strong> 50-day MA crosses below 200-day (bearish)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Risk Management -->
+                <article id="risk" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">⚠️</span>
+                        <div>
+                            <h2>Risk Management</h2>
+                            <span class="article-meta">7 min read • Essential</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <p>Risk management is crucial for long-term investing success. It's not just about making
+                            profits, but protecting your capital.</p>
+
+                        <div class="info-box warning">
+                            <h4>⚠️ Golden Rule</h4>
+                            <p>Never invest money you can't afford to lose. The stock market can be volatile, and past
+                                performance doesn't guarantee future results.</p>
+                        </div>
+
+                        <h3>Key Risk Management Strategies</h3>
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h4>🎯 Diversification</h4>
+                                <p>Don't put all eggs in one basket. Spread investments across different sectors, asset
+                                    classes, and geographies.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>📏 Position Sizing</h4>
+                                <p>Never risk more than 1-2% of your portfolio on a single trade. This limits damage
+                                    from any single loss.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>🛑 Stop Losses</h4>
+                                <p>Set predetermined exit points to limit losses. A 10-20% stop loss is common for swing
+                                    trading.</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>📊 Risk/Reward Ratio</h4>
+                                <p>Only take trades where potential reward is at least 2-3x the potential risk.</p>
+                            </div>
+                        </div>
+
+                        <h3>Common Mistakes to Avoid</h3>
+                        <ul class="styled-list warning">
+                            <li><strong>FOMO Trading</strong> - Buying because everyone else is</li>
+                            <li><strong>Averaging Down</strong> - Adding to losing positions</li>
+                            <li><strong>Overtrading</strong> - Trading too frequently</li>
+                            <li><strong>Ignoring Fundamentals</strong> - Only looking at charts</li>
+                            <li><strong>No Exit Strategy</strong> - Not knowing when to sell</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- Glossary -->
+                <article id="glossary" class="learn-article">
+                    <div class="article-header">
+                        <span class="article-icon">📖</span>
+                        <div>
+                            <h2>Trading Glossary</h2>
+                            <span class="article-meta">Reference • All Levels</span>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <div class="glossary-grid">
+                            <div class="glossary-item">
+                                <dt>Bull Market</dt>
+                                <dd>A market condition where prices are rising or expected to rise</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Bear Market</dt>
+                                <dd>A market condition where prices are falling or expected to fall</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Volatility</dt>
+                                <dd>The degree of variation in trading prices over time</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Liquidity</dt>
+                                <dd>How easily an asset can be bought or sold without affecting price</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Market Cap</dt>
+                                <dd>Total market value of a company's outstanding shares</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Dividend</dt>
+                                <dd>A portion of company's earnings paid to shareholders</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Portfolio</dt>
+                                <dd>Collection of financial investments held by an investor</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>IPO</dt>
+                                <dd>Initial Public Offering - when a company first sells stock publicly</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>ETF</dt>
+                                <dd>Exchange-Traded Fund - basket of securities traded like a single stock</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Hedge</dt>
+                                <dd>Investment made to reduce risk of adverse price movements</dd>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+
+        <!-- Footer with Disclaimer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span>📊</span> AI Market Intelligence
+                </div>
+                <div class="footer-links">
+                    <a href="/">Analyze</a>
+                    <a href="/dashboard.html">Dashboard</a>
+                    <a href="/learn.html">Learn</a>
+                </div>
+            </div>
+            <div class="disclaimer">
+                <p><strong>⚠️ Disclaimer:</strong> This content is for <strong>educational purposes only</strong>.
+                    It does not constitute financial advice, investment recommendations, or trading signals.
+                    Always do your own research and consult a qualified financial advisor before making investment
+                    decisions.
+                    Past performance is not indicative of future results. Investing involves risk, including potential
+                    loss of principal.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with FinBERT AI • © 2024 AI Market Intelligence</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="learn.js"></script>
+</body>
+
+</html>
