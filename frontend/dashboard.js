@@ -81,87 +81,179 @@ document.addEventListener('DOMContentLoaded', function () {
             // Update probability (simulated based on sentiment)
             updateProbability(data);
 
+            // ===== NEW FEATURES =====
+            updateKeyStatistics(data);
+            // updateRelatedStocks(data.related); // Feature removed
+            updateEarningsAndNews(data);
+
             // Update data freshness
             document.getElementById('data-freshness').textContent = new Date().toLocaleTimeString();
 
         } catch (error) {
             console.error('Error loading stock data:', error);
-            alert('Error loading stock data. Please check if the server is running.');
+            // alert('Error loading stock data. Please check if the server is running.');
+        }
+    }
+
+    // ==================== NEW FEATURE FUNCTIONS ====================
+    function updateKeyStatistics(data) {
+        const formatLargeNumber = (num) => {
+            if (!num) return '--';
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            return num.toLocaleString();
+        };
+
+        const safeFloat = (val, fixed = 2) => {
+            return val ? val.toFixed(fixed) : '--';
+        };
+
+        const animateValue = (elementId, value, prefix = '', suffix = '') => {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            // Reset animation
+            el.style.animation = 'none';
+            el.offsetHeight; /* trigger reflow */
+            el.style.animation = 'fadeInUp 0.5s ease forwards';
+
+            el.textContent = `${prefix}${value}${suffix}`;
+            el.classList.add('updated');
+            setTimeout(() => el.classList.remove('updated'), 1000);
+        };
+
+        animateValue('stat-open', safeFloat(data.open), '$');
+        animateValue('stat-high', safeFloat(data.dayHigh), '$');
+        animateValue('stat-low', safeFloat(data.dayLow), '$');
+        animateValue('stat-mktcap', formatLargeNumber(data.mktCap));
+        animateValue('stat-pe', safeFloat(data.peRatio));
+        animateValue('stat-yield', data.dividendYield ? (data.dividendYield * 100).toFixed(2) : '--', '', '%');
+        animateValue('stat-52h', safeFloat(data.fiftyTwoWeekHigh), '$');
+        animateValue('stat-52l', safeFloat(data.fiftyTwoWeekLow), '$');
+    }
+
+    // Related Stocks function removed per user request
+
+    function updateEarningsAndNews(data) {
+        // Earnings
+        const dateStr = data.earnings && data.earnings.length > 0 ? new Date(data.earnings[0]).toLocaleDateString() : '--';
+        document.getElementById('earnings-date').textContent = dateStr;
+        document.getElementById('stock-sector').textContent = data.sector || '--';
+        document.getElementById('stock-industry').textContent = data.industry || '--';
+
+        // News
+        const newsContainer = document.getElementById('news-feed');
+        if (newsContainer) {
+            newsContainer.innerHTML = '';
+
+            if (!data.news || data.news.length === 0) {
+                newsContainer.innerHTML = '<div class="loading-placeholder">No recent news available</div>';
+                return;
+            }
+
+            data.news.forEach(item => {
+                const newsItem = document.createElement('a');
+                newsItem.className = 'news-item';
+                newsItem.href = item.link;
+                newsItem.target = '_blank';
+
+                const time = new Date(item.providerPublishTime * 1000).toLocaleDateString();
+
+                newsItem.innerHTML = `
+                    <div class="news-title">${item.title}</div>
+                    <div class="news-meta">
+                        <span class="news-publisher">${item.publisher}</span>
+                        <span>${time}</span>
+                    </div>
+                `;
+                newsContainer.appendChild(newsItem);
+            });
         }
     }
 
     // ==================== STOCK CHART ====================
     function updateStockChart(dates, prices, symbol) {
-        const ctx = document.getElementById('stock-chart').getContext('2d');
+        const canvas = document.getElementById('stock-chart');
+        const ctx = canvas.getContext('2d');
 
+        // Fix: Explicitly destroy chart instance if exists
         if (stockChart) {
             stockChart.destroy();
+            stockChart = null;
         }
 
         const isPositive = prices[prices.length - 1] >= prices[0];
-        const lineColor = isPositive ? 'rgba(0, 212, 138, 1)' : 'rgba(255, 82, 82, 1)';
-        const bgGradient = ctx.createLinearGradient(0, 0, 0, 200);
-        bgGradient.addColorStop(0, isPositive ? 'rgba(0, 212, 138, 0.3)' : 'rgba(255, 82, 82, 0.3)');
-        bgGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        const lineColor = isPositive ? '#00d48a' : '#ff5252'; // Use hex for better compatibility
+
+        // Create gradient
+        const bgGradient = ctx.createLinearGradient(0, 0, 0, 400); // Increased height for gradient
+        bgGradient.addColorStop(0, isPositive ? 'rgba(0, 212, 138, 0.2)' : 'rgba(255, 82, 82, 0.2)');
+        bgGradient.addColorStop(1, 'rgba(10, 10, 15, 0)');
 
         stockChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: dates,
                 datasets: [{
-                    label: `${symbol} Price`,
+                    label: symbol,
                     data: prices,
                     borderColor: lineColor,
                     backgroundColor: bgGradient,
                     borderWidth: 2,
                     fill: true,
-                    tension: 0.4,
+                    tension: 0.1, // Reduced tension for sharper lines usually preferred for stocks
                     pointRadius: 0,
                     pointHoverRadius: 6,
-                    pointHoverBackgroundColor: lineColor
+                    pointHoverBackgroundColor: lineColor,
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
+                    mode: 'index',
                     intersect: false,
-                    mode: 'index'
                 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(18, 18, 26, 0.95)',
+                        backgroundColor: 'rgba(18, 18, 26, 0.9)',
                         titleColor: '#fff',
-                        bodyColor: '#a0a0b0',
-                        borderColor: 'rgba(102, 126, 234, 0.3)',
+                        bodyColor: '#ccc',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
                         borderWidth: 1,
-                        padding: 12,
+                        padding: 10,
                         displayColors: false,
                         callbacks: {
-                            label: (context) => `$${context.parsed.y.toFixed(2)}`
+                            label: (context) => `Price: $${context.parsed.y.toFixed(2)}`
                         }
                     }
                 },
                 scales: {
-                    y: {
-                        ticks: {
-                            color: '#8a8a9a',
-                            callback: (value) => '$' + value.toFixed(0)
-                        },
-                        grid: { color: 'rgba(255,255,255,0.03)' }
-                    },
                     x: {
+                        grid: { display: false },
                         ticks: {
-                            color: '#8a8a9a',
-                            maxTicksLimit: 6
+                            color: '#5a5a6a',
+                            maxTicksLimit: 6,
+                            maxRotation: 0
+                        }
+                    },
+                    y: {
+                        position: 'right', // Standard for finance
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
                         },
-                        grid: { display: false }
+                        ticks: {
+                            color: '#5a5a6a',
+                            callback: (value) => '$' + value.toFixed(0)
+                        }
                     }
                 },
                 animation: {
-                    duration: 1500,
-                    easing: 'easeOutQuart'
+                    duration: 1000
                 }
             }
         });

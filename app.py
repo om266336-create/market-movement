@@ -279,10 +279,54 @@ def analyze():
         "stock": stock_data
     })
 
+def get_related_stocks(symbol, sector):
+    """Get related stocks based on symbol or sector"""
+    # Hardcoded popular peers for better quality
+    peers = {
+        'AAPL': ['MSFT', 'GOOGL', 'AMZN', 'META'],
+        'MSFT': ['AAPL', 'GOOGL', 'AMZN', 'ORCL'],
+        'GOOGL': ['MSFT', 'META', 'AMZN', 'AAPL'],
+        'AMZN': ['WMT', 'GOOGL', 'MSFT', 'TGT'],
+        'TSLA': ['F', 'GM', 'RIVN', 'LCID'],
+        'NVDA': ['AMD', 'INTC', 'TSM', 'QCOM'],
+        'AMD': ['NVDA', 'INTC', 'TSM', 'QCOM'],
+        'INTC': ['AMD', 'NVDA', 'TSM', 'QCOM'],
+        'NFLX': ['DIS', 'CMCSA', 'WBD', 'PARA'],
+        'META': ['GOOGL', 'SNAP', 'PINS', 'TWTR'],
+        'JPM': ['BAC', 'WFC', 'C', 'GS'],
+        'BAC': ['JPM', 'WFC', 'C', 'GS'],
+        'WMT': ['TGT', 'COST', 'AMZN', 'HD'],
+        'DIS': ['NFLX', 'CMCSA', 'WBD', 'PARA'],
+    }
+    
+    if symbol in peers:
+        return peers[symbol]
+    
+    # Fallback based on sector if available (simplified)
+    if sector == 'Technology':
+        return ['AAPL', 'MSFT', 'NVDA', 'ORCL']
+    elif sector == 'Financial Services':
+        return ['JPM', 'BAC', 'GS', 'MS']
+    elif sector == 'Healthcare':
+        return ['JNJ', 'PFE', 'UNH', 'LLY']
+    elif sector == 'Consumer Cyclical':
+        return ['AMZN', 'TSLA', 'HD', 'MCD']
+    
+    return ['AAPL', 'MSFT', 'GOOGL', 'AMZN'] # Generic fallback
+
 # ------------------ STOCK API ------------------
 @app.route('/stock/<symbol>')
 def get_stock(symbol):
     period = request.args.get('period', '1mo')
+    
+    # improved interval selection for different periods
+    interval = '1d'
+    if period == '1d':
+        interval = '5m'
+    elif period == '5d':
+        interval = '15m'
+    elif period == '1mo':
+        interval = '90m'
     
     try:
         ticker = yf.Ticker(symbol.upper())
@@ -293,12 +337,12 @@ def get_stock(symbol):
         change = current_price - previous_close
         change_percent = (change / previous_close * 100) if previous_close else 0
         
-        hist = ticker.history(period=period)
+        hist = ticker.history(period=period, interval=interval)
         
         if hist.empty:
             return jsonify({"error": "No data found for symbol"}), 404
         
-        return jsonify({
+        stock_info = {
             "symbol": symbol.upper(),
             "name": info.get('shortName', symbol.upper()),
             "price": round(current_price, 2),
@@ -308,8 +352,28 @@ def get_stock(symbol):
             "prices": hist['Close'].round(2).tolist(),
             "volume": hist['Volume'].tolist(),
             "high": hist['High'].round(2).tolist(),
-            "low": hist['Low'].round(2).tolist()
-        })
+            "low": hist['Low'].round(2).tolist(),
+            # Extended Stats
+            "open": info.get('open'),
+            "dayHigh": info.get('dayHigh'),
+            "dayLow": info.get('dayLow'),
+            "mktCap": info.get('marketCap'),
+            "peRatio": info.get('trailingPE'),
+            "dividendYield": info.get('dividendYield'),
+            "fiftyTwoWeekHigh": info.get('fiftyTwoWeekHigh'),
+            "fiftyTwoWeekLow": info.get('fiftyTwoWeekLow'),
+            "volumeAvg": info.get('averageVolume'),
+            "sector": info.get('sector'),
+            "industry": info.get('industry'),
+            "website": info.get('website'),
+            "description": info.get('longBusinessSummary'),
+            # Lists
+            "news": ticker.news[:5] if hasattr(ticker, 'news') else [],
+            "earnings": ticker.calendar.get('Earnings Date', []) if hasattr(ticker, 'calendar') and isinstance(ticker.calendar, dict) else [],
+            "related": get_related_stocks(symbol.upper(), info.get('sector'))
+        }
+        
+        return jsonify(stock_info)
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
