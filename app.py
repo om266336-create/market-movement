@@ -1,18 +1,34 @@
 from flask import Flask, request, jsonify, send_from_directory
-from transformers import pipeline
-import yfinance as yf
 import re
 import os
+import requests
+import yfinance as yf
 
 app = Flask(__name__)
 
 # ------------------ LOAD MODEL ------------------
-print("Loading FinBERT model... Please wait (first run may take several minutes)")
-sentiment_pipeline = pipeline(
-    "sentiment-analysis",
-    model="ProsusAI/finbert"
-)
-print("FinBERT model loaded successfully")
+# REFACTORED FOR VERCEL: Using Hugging Face Inference API instead of local model
+# This drastically reduces the bundle size (< 250MB) 
+import requests
+
+HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+# Get API token from environment variable (Best practice for Vercel)
+HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
+
+if not HF_API_TOKEN:
+    print("WARNING: HF_API_TOKEN not found in environment variables. Sentiment analysis will fail.")
+
+def query_hf_api(payload):
+    """Send text to Hugging Face API for analysis"""
+    headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json=payload)
+        return response.json()
+    except Exception as e:
+        print(f"API Error: {e}")
+        return {"error": str(e)}
+
+print("App initialized in Lightweight Mode (API)")
 
 # ------------------ COMPANY TO TICKER MAPPING ------------------
 COMPANY_TICKERS = {
@@ -162,8 +178,19 @@ def analyze_sentiment_trend(text):
     sentiments = []
     for para in paragraphs[:5]:  # Analyze up to 5 paragraphs
         try:
-            result = sentiment_pipeline(para[:512])[0]
-            sentiments.append(result['label'].lower())
+            # API Call
+            api_output = query_hf_api({"inputs": para[:512]})
+            
+            # Handle API list response (it returns a list of lists usually)
+            if isinstance(api_output, list) and len(api_output) > 0:
+                if isinstance(api_output[0], list): # Nested list [[{...}]]
+                   result = api_output[0][0]
+                else: # Flat list [{...}]
+                   result = api_output[0]
+                
+                sentiments.append(result['label'].lower())
+            else:
+                continue
         except:
             continue
     
@@ -214,9 +241,34 @@ def analyze():
         return jsonify({"error": "Text input is required"}), 400
 
     text = data['text']
-    result = sentiment_pipeline(text[:512])[0]
-    label = result['label'].lower()
-    score = result['score']
+    
+    # Check for API Token
+    if not HF_API_TOKEN:
+        return jsonify({"error": "Configuration Error: HF_API_TOKEN is missing on server."}), 500
+
+    # Call API
+    api_response = query_hf_api({"inputs": text[:512]})
+    
+    # Error handling for API limits or loading
+    if isinstance(api_response, dict) and 'error' in api_response:
+        return jsonify({"error": f"Model API Error: {api_response.get('error')}"}), 503
+        
+    # Parse Response
+    # API usually returns [[{'label': 'positive', 'score': 0.9}]] or similar
+    try:
+        if isinstance(api_response, list) and len(api_response) > 0:
+             if isinstance(api_response[0], list):
+                 result = api_response[0][0]
+             else:
+                 result = api_response[0]
+                 
+             label = result['label'].lower()
+             score = result['score']
+        else:
+             return jsonify({"error": "Invalid response from AI Model"}), 500
+    except Exception as e:
+         return jsonify({"error": f"Parsing Error: {str(e)}"}), 500
+
     confidence = round(score * 100, 2)
 
     if label == 'positive':

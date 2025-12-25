@@ -1,8 +1,6 @@
 flask
-transformers
-torch
-datasets
-yfinance
 gunicorn
+yfinance
 ta
 scipy
+requests
