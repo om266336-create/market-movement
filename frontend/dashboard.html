@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
 <body class="dark-theme page-transition">
@@ -101,127 +101,140 @@
                             <button class="period-btn" data-period="1y">1Y</button>
                         </div>
                         <div class="stock-chart-container">
-                            <canvas id="stock-chart"></canvas>
+                            <div id="stock-chart" style="width: 100%; height: 400px;"></div>
                         </div>
+                    </div>
+                    <!-- AI Insight Card -->
+                    <div class="ai-insight-card"
+                        style="margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div class="insight-header"
+                            style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <span style="font-size: 1.5rem;">🤖</span>
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">AI Market Summary</h3>
+                        </div>
+                        <p id="ai-summary-text" style="color: #ccc; line-height: 1.6; font-size: 0.95rem; margin: 0;">
+                            Select a stock to generate an AI-powered market summary...
+                        </p>
                     </div>
                 </div>
             </div>
+    </div>
 
-            <!-- Key Statistics -->
-            <div class="panel stats-panel" style="margin-top: 24px;">
-                <div class="panel-header">
-                    <h2>📊 Key Statistics</h2>
+    <!-- Key Statistics -->
+    <div class="panel stats-panel" style="margin-top: 24px;">
+        <div class="panel-header">
+            <h2>📊 Key Statistics</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-label">Open</span>
+                <span id="stat-open" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">High</span>
+                <span id="stat-high" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Low</span>
+                <span id="stat-low" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Mkt Cap</span>
+                <span id="stat-mktcap" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">P/E Ratio</span>
+                <span id="stat-pe" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Div Yield</span>
+                <span id="stat-yield" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">52W High</span>
+                <span id="stat-52h" class="stat-value">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">52W Low</span>
+                <span id="stat-52l" class="stat-value">--</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Technical Indicators -->
+    <div class="panel technical-panel" id="technical">
+        <div class="panel-header">
+            <h2>📉 Technical Indicators</h2>
+        </div>
+        <div class="indicators-grid">
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <span class="indicator-name">RSI (14)</span>
+                    <span id="rsi-value" class="indicator-value">--</span>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Open</span>
-                        <span id="stat-open" class="stat-value">--</span>
+                <div class="rsi-gauge">
+                    <div class="rsi-zones">
+                        <span class="zone oversold">Oversold</span>
+                        <span class="zone neutral">Neutral</span>
+                        <span class="zone overbought">Overbought</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">High</span>
-                        <span id="stat-high" class="stat-value">--</span>
+                    <div class="rsi-bar">
+                        <div id="rsi-marker" class="rsi-marker" style="left: 50%;"></div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Low</span>
-                        <span id="stat-low" class="stat-value">--</span>
+                    <div class="rsi-labels">
+                        <span>0</span>
+                        <span>30</span>
+                        <span>70</span>
+                        <span>100</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Mkt Cap</span>
-                        <span id="stat-mktcap" class="stat-value">--</span>
+                </div>
+                <div id="rsi-signal" class="indicator-signal neutral">Neutral</div>
+            </div>
+
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <span class="indicator-name">MACD</span>
+                    <span id="macd-value" class="indicator-value">--</span>
+                </div>
+                <div class="macd-info">
+                    <div class="macd-row">
+                        <span>Signal Line:</span>
+                        <span id="macd-signal-value">--</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">P/E Ratio</span>
-                        <span id="stat-pe" class="stat-value">--</span>
+                    <div class="macd-row">
+                        <span>Histogram:</span>
+                        <span id="macd-histogram">--</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Div Yield</span>
-                        <span id="stat-yield" class="stat-value">--</span>
+                </div>
+                <div id="macd-signal" class="indicator-signal neutral">Neutral</div>
+            </div>
+
+            <div class="indicator-card full-width">
+                <div class="indicator-header">
+                    <span class="indicator-name">Moving Averages</span>
+                </div>
+                <div class="ma-grid">
+                    <div class="ma-item">
+                        <span class="ma-label">MA 20</span>
+                        <span id="ma20-value" class="ma-value">--</span>
+                        <span id="ma20-signal" class="ma-signal">--</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">52W High</span>
-                        <span id="stat-52h" class="stat-value">--</span>
+                    <div class="ma-item">
+                        <span class="ma-label">MA 50</span>
+                        <span id="ma50-value" class="ma-value">--</span>
+                        <span id="ma50-signal" class="ma-signal">--</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">52W Low</span>
-                        <span id="stat-52l" class="stat-value">--</span>
+                    <div class="ma-item">
+                        <span class="ma-label">MA 200</span>
+                        <span id="ma200-value" class="ma-value">--</span>
+                        <span id="ma200-signal" class="ma-signal">--</span>
                     </div>
                 </div>
             </div>
-
-
-
-            <!-- Technical Indicators -->
-            <div class="panel technical-panel" id="technical">
-                <div class="panel-header">
-                    <h2>📉 Technical Indicators</h2>
-                </div>
-                <div class="indicators-grid">
-                    <div class="indicator-card">
-                        <div class="indicator-header">
-                            <span class="indicator-name">RSI (14)</span>
-                            <span id="rsi-value" class="indicator-value">--</span>
-                        </div>
-                        <div class="rsi-gauge">
-                            <div class="rsi-zones">
-                                <span class="zone oversold">Oversold</span>
-                                <span class="zone neutral">Neutral</span>
-                                <span class="zone overbought">Overbought</span>
-                            </div>
-                            <div class="rsi-bar">
-                                <div id="rsi-marker" class="rsi-marker" style="left: 50%;"></div>
-                            </div>
-                            <div class="rsi-labels">
-                                <span>0</span>
-                                <span>30</span>
-                                <span>70</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div id="rsi-signal" class="indicator-signal neutral">Neutral</div>
-                    </div>
-
-                    <div class="indicator-card">
-                        <div class="indicator-header">
-                            <span class="indicator-name">MACD</span>
-                            <span id="macd-value" class="indicator-value">--</span>
-                        </div>
-                        <div class="macd-info">
-                            <div class="macd-row">
-                                <span>Signal Line:</span>
-                                <span id="macd-signal-value">--</span>
-                            </div>
-                            <div class="macd-row">
-                                <span>Histogram:</span>
-                                <span id="macd-histogram">--</span>
-                            </div>
-                        </div>
-                        <div id="macd-signal" class="indicator-signal neutral">Neutral</div>
-                    </div>
-
-                    <div class="indicator-card full-width">
-                        <div class="indicator-header">
-                            <span class="indicator-name">Moving Averages</span>
-                        </div>
-                        <div class="ma-grid">
-                            <div class="ma-item">
-                                <span class="ma-label">MA 20</span>
-                                <span id="ma20-value" class="ma-value">--</span>
-                                <span id="ma20-signal" class="ma-signal">--</span>
-                            </div>
-                            <div class="ma-item">
-                                <span class="ma-label">MA 50</span>
-                                <span id="ma50-value" class="ma-value">--</span>
-                                <span id="ma50-signal" class="ma-signal">--</span>
-                            </div>
-                            <div class="ma-item">
-                                <span class="ma-label">MA 200</span>
-                                <span id="ma200-value" class="ma-value">--</span>
-                                <span id="ma200-signal" class="ma-signal">--</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Right Column -->
@@ -268,6 +281,43 @@
                 <div class="outlook-card">
                     <span class="outlook-period">Mid-Term (1-3 months)</span>
                     <span id="outlook-mid" class="outlook-value">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk & Confidence Analysis -->
+        <div class="panel risk-panel" style="margin-top: 24px;">
+            <div class="panel-header">
+                <h2>🛡️ Risk & Confidence</h2>
+            </div>
+            <div class="risk-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- Risk Gauge -->
+                <div class="risk-card"
+                    style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; text-align: center;">
+                    <span style="font-size: 0.9rem; color: #888; display: block; margin-bottom: 8px;">Risk Score</span>
+                    <div class="risk-value" style="font-size: 1.5rem; font-weight: 700; color: #fff;">
+                        <span id="risk-score">--</span>
+                        <span style="font-size: 1rem; opacity: 0.7;">/100</span>
+                    </div>
+                    <div class="risk-bar-container"
+                        style="height: 6px; background: #333; border-radius: 3px; margin-top: 10px; overflow: hidden;">
+                        <div id="risk-bar-fill"
+                            style="width: 0%; height: 100%; background: #ff5252; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+                <!-- Confidence Gauge -->
+                <div class="confidence-card"
+                    style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; text-align: center;">
+                    <span style="font-size: 0.9rem; color: #888; display: block; margin-bottom: 8px;">AI
+                        Confidence</span>
+                    <div class="confidence-value" style="font-size: 1.5rem; font-weight: 700; color: #fff;">
+                        <span id="ai-confidence">--</span>%
+                    </div>
+                    <div class="conf-bar-container"
+                        style="height: 6px; background: #333; border-radius: 3px; margin-top: 10px; overflow: hidden;">
+                        <div id="conf-bar-fill"
+                            style="width: 0%; height: 100%; background: #00d48a; transition: width 1s ease;"></div>
+                    </div>
                 </div>
             </div>
         </div>

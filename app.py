@@ -415,6 +415,7 @@ def get_stock(symbol):
             "changePercent": round(change_percent, 2),
             "dates": hist.index.strftime('%Y-%m-%d').tolist(),
             "prices": hist['Close'].round(2).tolist(),
+            "open": hist['Open'].round(2).tolist(),
             "volume": hist['Volume'].tolist(),
             "high": hist['High'].round(2).tolist(),
             "low": hist['Low'].round(2).tolist(),
@@ -435,7 +436,9 @@ def get_stock(symbol):
             # Lists
             "news": ticker.news[:5] if hasattr(ticker, 'news') else [],
             "earnings": ticker.calendar.get('Earnings Date', []) if hasattr(ticker, 'calendar') and isinstance(ticker.calendar, dict) else [],
-            "related": get_related_stocks(symbol.upper(), info.get('sector'))
+            "related": get_related_stocks(symbol.upper(), info.get('sector')),
+             # Risk Metrics
+            "volatility": hist['Close'].pct_change().std() * (252 ** 0.5) * 100 if len(hist) > 1 else 0 # Annualized volatility
         }
         
         return jsonify(stock_info)
