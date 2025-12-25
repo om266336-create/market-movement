@@ -12,8 +12,8 @@ app = Flask(__name__)
 import requests
 
 # UPDATED: Old URL 'api-inference.huggingface.co' is deprecated.
-# New URL is 'router.huggingface.co'
-HF_API_URL = "https://router.huggingface.co/models/ProsusAI/finbert"
+# New URL is 'router.huggingface.co/hf-inference'
+HF_API_URL = "https://router.huggingface.co/hf-inference/models/ProsusAI/finbert"
 # Get API token from environment variable (Best practice for Vercel)
 HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
 
@@ -25,6 +25,17 @@ def query_hf_api(payload):
     headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
     try:
         response = requests.post(HF_API_URL, headers=headers, json=payload)
+        
+        # Check for non-200 status codes
+        if response.status_code != 200:
+            # Try to get JSON error if possible
+            try:
+                error_json = response.json()
+                return {"error": f"API Error {response.status_code}: {error_json.get('error', str(error_json))}"}
+            except:
+                # Fallback to raw text (handling HTML responses etc)
+                return {"error": f"API Error {response.status_code}: {response.text[:200]}"}
+
         return response.json()
     except Exception as e:
         print(f"API Error: {e}")
