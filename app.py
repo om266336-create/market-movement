@@ -413,14 +413,14 @@ def get_stock(symbol):
             "price": round(current_price, 2),
             "change": round(change, 2),
             "changePercent": round(change_percent, 2),
-            "dates": (hist.index.astype('int64') // 10**9).tolist(), # Unix timestamps for JS compatibility
+            "dates": hist.index.strftime('%Y-%m-%d').tolist(),
             "prices": hist['Close'].round(2).tolist(),
             "open": hist['Open'].round(2).tolist(),
             "volume": hist['Volume'].tolist(),
             "high": hist['High'].round(2).tolist(),
             "low": hist['Low'].round(2).tolist(),
             # Extended Stats
-            "open": info.get('open'),
+            "dayOpenStats": info.get('open'),
             "dayHigh": info.get('dayHigh'),
             "dayLow": info.get('dayLow'),
             "mktCap": info.get('marketCap'),

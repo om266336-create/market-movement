@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="dark-theme page-transition">
@@ -102,20 +102,8 @@
                             <button class="period-btn" data-period="1y">1Y</button>
                         </div>
                         <div class="stock-chart-container">
-                            <div id="stock-chart" style="width: 100%; height: 400px;"></div>
+                            <canvas id="stock-chart"></canvas>
                         </div>
-                    </div>
-                    <!-- AI Insight Card -->
-                    <div class="ai-insight-card"
-                        style="margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <div class="insight-header"
-                            style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                            <span style="font-size: 1.5rem;">🤖</span>
-                            <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">AI Market Summary</h3>
-                        </div>
-                        <p id="ai-summary-text" style="color: #ccc; line-height: 1.6; font-size: 0.95rem; margin: 0;">
-                            Select a stock to generate an AI-powered market summary...
-                        </p>
                     </div>
                 </div>
             </div>
@@ -158,6 +146,27 @@
             <div class="stat-item">
                 <span class="stat-label">52W Low</span>
                 <span id="stat-52l" class="stat-value">--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings & Company Info -->
+    <div class="panel info-panel" style="margin-top: 24px;">
+        <div class="panel-header">
+            <h2>🏢 Company Information</h2>
+        </div>
+        <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;">
+            <div>
+                <span style="color: #888; font-size: 0.8rem;">Sector</span>
+                <div id="stock-sector" style="font-weight: 600;">--</div>
+            </div>
+            <div>
+                <span style="color: #888; font-size: 0.8rem;">Industry</span>
+                <div id="stock-industry" style="font-weight: 600;">--</div>
+            </div>
+            <div>
+                <span style="color: #888; font-size: 0.8rem;">Next Earnings</span>
+                <div id="earnings-date" style="font-weight: 600;">--</div>
             </div>
         </div>
     </div>
@@ -367,6 +376,10 @@
                             <div class="meter-fill" style="width: 65%; background: var(--success);"></div>
                         </div>
                         <span class="meter-value">65% Positive</span>
+                    </div>
+                    <div id="news-feed" class="news-feed"
+                        style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
+                        <!-- News items will be injected here -->
                     </div>
                     <p class="source-note">Based on recent financial news analysis</p>
                 </div>

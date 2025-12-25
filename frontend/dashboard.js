@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
             changeEl.textContent = `${isPositive ? '+' : ''}${data.change.toFixed(2)} (${isPositive ? '+' : ''}${data.changePercent.toFixed(2)}%)`;
             changeEl.className = `change-badge ${isPositive ? 'positive' : 'negative'}`;
 
-            // Update chart with full data object for OHLC
-            updateStockChart(data.dates, data.prices, data.symbol, data);
+            // Update chart
+            updateStockChart(data.dates, data.prices, data.symbol);
 
             // Load technical indicators
             loadTechnicalIndicators(symbol, data);
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => el.classList.remove('updated'), 1000);
         };
 
-        animateValue('stat-open', safeFloat(data.open), '$');
+        animateValue('stat-open', safeFloat(data.dayOpenStats), '$');
         animateValue('stat-high', safeFloat(data.dayHigh), '$');
         animateValue('stat-low', safeFloat(data.dayLow), '$');
         animateValue('stat-mktcap', formatLargeNumber(data.mktCap));
