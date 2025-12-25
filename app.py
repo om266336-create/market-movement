@@ -11,7 +11,9 @@ app = Flask(__name__)
 # This drastically reduces the bundle size (< 250MB) 
 import requests
 
-HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+# UPDATED: Old URL 'api-inference.huggingface.co' is deprecated.
+# New URL is 'router.huggingface.co'
+HF_API_URL = "https://router.huggingface.co/models/ProsusAI/finbert"
 # Get API token from environment variable (Best practice for Vercel)
 HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
 
