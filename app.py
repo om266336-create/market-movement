@@ -413,7 +413,7 @@ def get_stock(symbol):
             "price": round(current_price, 2),
             "change": round(change, 2),
             "changePercent": round(change_percent, 2),
-            "dates": hist.index.strftime('%Y-%m-%d').tolist(),
+            "dates": (hist.index.astype('int64') // 10**9).tolist(), # Unix timestamps for JS compatibility
             "prices": hist['Close'].round(2).tolist(),
             "open": hist['Open'].round(2).tolist(),
             "volume": hist['Volume'].tolist(),
