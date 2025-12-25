@@ -4,3 +4,4 @@ yfinance
 ta
 scipy
 requests
+pandas
