@@ -174,67 +174,91 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==================== STOCK CHART ====================
-    function updateStockChart(dates, prices, symbol, dataObj) {
-        const chartContainer = document.getElementById('stock-chart');
-        chartContainer.innerHTML = ''; // Clear previous chart
+    function updateStockChart(dates, prices, symbol) {
+        const canvas = document.getElementById('stock-chart');
+        const ctx = canvas.getContext('2d');
 
-        // Initialize Lightweight Chart
-        const chart = LightweightCharts.createChart(chartContainer, {
-            width: chartContainer.clientWidth,
-            height: 400,
-            layout: {
-                background: { type: 'solid', color: 'transparent' },
-                textColor: '#d1d4dc',
+        // Fix: Explicitly destroy chart instance if exists
+        if (stockChart) {
+            stockChart.destroy();
+            stockChart = null;
+        }
+
+        const isPositive = prices[prices.length - 1] >= prices[0];
+        const lineColor = isPositive ? '#00d48a' : '#ff5252';
+
+        // Create gradient
+        const bgGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        bgGradient.addColorStop(0, isPositive ? 'rgba(0, 212, 138, 0.2)' : 'rgba(255, 82, 82, 0.2)');
+        bgGradient.addColorStop(1, 'rgba(10, 10, 15, 0)');
+
+        stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: symbol,
+                    data: prices,
+                    borderColor: lineColor,
+                    backgroundColor: bgGradient,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: lineColor,
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2
+                }]
             },
-            grid: {
-                vertLines: { color: 'rgba(42, 46, 57, 0.2)' },
-                horzLines: { color: 'rgba(42, 46, 57, 0.2)' },
-            },
-            rightPriceScale: {
-                borderColor: 'rgba(197, 203, 206, 0.8)',
-            },
-            timeScale: {
-                borderColor: 'rgba(197, 203, 206, 0.8)',
-            },
-        });
-
-        const candlestickSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a',
-            downColor: '#ef5350',
-            borderVisible: false,
-            wickUpColor: '#26a69a',
-            wickDownColor: '#ef5350',
-        });
-
-        // Format data for Lightweight Charts (requires { time, open, high, low, close })
-        // Use available high/low data or approximate if missing
-        const chartData = dates.map((date, index) => {
-            return {
-                time: date,
-                open: dataObj.open ? dataObj.open[index] : prices[index],
-                high: dataObj.high ? dataObj.high[index] : prices[index],
-                low: dataObj.low ? dataObj.low[index] : prices[index],
-                close: prices[index]
-            };
-        });
-
-        candlestickSeries.setData(chartData);
-        stockChart = chart; // Store reference
-
-        // Handle resize
-        window.addEventListener('resize', () => {
-            chart.applyOptions({ width: chartContainer.clientWidth });
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 18, 26, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            label: (context) => `Price: $${context.parsed.y.toFixed(2)}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#5a5a6a',
+                            maxTicksLimit: 6,
+                            maxRotation: 0
+                        }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            color: '#5a5a6a',
+                            callback: (value) => '$' + value.toFixed(0)
+                        }
+                    }
+                }
+            }
         });
     }
 
     // ==================== NEW UI UPDATES ====================
     function updateRiskAndSummary(data) {
-        // AI Summary
-        const summaryText = document.getElementById('ai-summary-text');
-        if (summaryText) {
-            summaryText.textContent = data.insight || "No AI summary available.";
-        }
-
         // Risk Score (Volatility based)
         const riskScore = Math.min(100, Math.round(data.volatility || 0));
         const riskEl = document.getElementById('risk-score');
