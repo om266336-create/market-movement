@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (data.error) {
-                alert('Error: ' + data.error);
+                const overview = document.getElementById('stock-overview');
+                overview.innerHTML = `<div class="error-message" style="color: #ff5252; padding: 20px; text-align: center;">${data.error}</div>`;
                 return;
             }
 
