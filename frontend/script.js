@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             analysisData = await response.json();
 
+            // Handle API Errors (Missing Token or Model Loading)
+            if (analysisData.error) {
+                alert('AI Error: ' + analysisData.error);
+                // Also log to console for debugging
+                console.error('Backend Error:', analysisData.error);
+                return;
+            }
+
             // Show results
             resultsSection.style.display = 'block';
 
