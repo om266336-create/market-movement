@@ -3,6 +3,11 @@ import re
 import os
 import requests
 import yfinance as yf
+import time
+
+# ------------------ CACHE CONFIG ------------------
+STOCK_CACHE = {}
+CACHE_DURATION = 300  # 5 minutes in seconds
 
 app = Flask(__name__)
 
@@ -381,8 +386,18 @@ def get_related_stocks(symbol, sector):
 
 # ------------------ STOCK API ------------------
 @app.route('/stock/<symbol>')
-def get_stock(symbol):
+def get_cached_stock(symbol):
     period = request.args.get('period', '1mo')
+    
+    # Check Cache
+    cache_key = f"{symbol.upper()}_{period}"
+    current_time = time.time()
+    
+    if cache_key in STOCK_CACHE:
+        timestamp, data = STOCK_CACHE[cache_key]
+        if current_time - timestamp < CACHE_DURATION:
+            print(f"Serving {symbol} from cache")
+            return jsonify(data)
     
     # improved interval selection for different periods
     interval = '1d'
@@ -440,6 +455,9 @@ def get_stock(symbol):
              # Risk Metrics
             "volatility": hist['Close'].pct_change().std() * (252 ** 0.5) * 100 if len(hist) > 1 else 0 # Annualized volatility
         }
+        
+        # Save to Cache
+        STOCK_CACHE[cache_key] = (current_time, stock_info)
         
         return jsonify(stock_info)
         
