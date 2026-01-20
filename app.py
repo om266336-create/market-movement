@@ -310,32 +310,7 @@ def analyze():
     stock_data = None
     
     if detected_ticker:
-        try:
-            ticker = yf.Ticker(detected_ticker)
-            info = ticker.info
-            
-            current_price = info.get('currentPrice') or info.get('regularMarketPrice', 0)
-            previous_close = info.get('previousClose', current_price)
-            change = current_price - previous_close
-            change_percent = (change / previous_close * 100) if previous_close else 0
-            
-            hist = ticker.history(period='1mo')
-            
-            if not hist.empty:
-                stock_data = {
-                    "symbol": detected_ticker,
-                    "name": info.get('shortName', detected_ticker),
-                    "price": round(current_price, 2),
-                    "change": round(change, 2),
-                    "changePercent": round(change_percent, 2),
-                    "dates": hist.index.strftime('%Y-%m-%d').tolist(),
-                    "prices": hist['Close'].round(2).tolist(),
-                    "volume": hist['Volume'].tolist(),
-                    "high": hist['High'].round(2).tolist(),
-                    "low": hist['Low'].round(2).tolist()
-                }
-        except Exception as e:
-            print(f"Error fetching stock data: {e}")
+        stock_data = fetch_stock_data_cached(detected_ticker, period='1mo')
 
     return jsonify({
         "sentiment": label.capitalize(),
@@ -385,34 +360,97 @@ def get_related_stocks(symbol, sector):
     return ['AAPL', 'MSFT', 'GOOGL', 'AMZN'] # Generic fallback
 
 # ------------------ STOCK API ------------------
-@app.route('/stock/<symbol>')
-def get_cached_stock(symbol):
-    period = request.args.get('period', '1mo')
+# ------------------ STOCK DATA CACHE MANAGER ------------------
+def generate_mock_data(symbol, period='1mo'):
+    """Generate realistic looking mock data when API fails"""
+    import random
+    from datetime import datetime, timedelta
     
-    # Check Cache
-    cache_key = f"{symbol.upper()}_{period}"
+    # Base price based on symbol hash (consistent for same symbol)
+    base_price = sum(ord(c) for c in symbol) % 500 + 50
+    
+    dates = []
+    prices = []
+    
+    days = 30 if period == '1mo' else 7 if period == '5d' else 1
+    points = 30 if period == '1mo' else 70  # simplified
+    
+    end_date = datetime.now()
+    
+    current_price = base_price
+    
+    for i in range(points):
+        date = end_date - timedelta(days=points-i)
+        dates.append(date.strftime('%Y-%m-%d'))
+        
+        # Random walk
+        change = random.uniform(-0.02, 0.02)
+        current_price = current_price * (1 + change)
+        prices.append(round(current_price, 2))
+        
+    return {
+        "symbol": symbol.upper(),
+        "name": f"{symbol.upper()} (Simulated Data)",
+        "price": round(current_price, 2),
+        "change": round(current_price - prices[0], 2),
+        "changePercent": round((current_price - prices[0]) / prices[0] * 100, 2),
+        "dates": dates,
+        "prices": prices,
+        "volume": [random.randint(1000000, 5000000) for _ in range(points)],
+        "high": [p * 1.01 for p in prices],
+        "low": [p * 0.99 for p in prices],
+        "dayOpenStats": round(prices[-1] * 0.99, 2),
+        "dayHigh": round(prices[-1] * 1.01, 2),
+        "dayLow": round(prices[-1] * 0.98, 2),
+        "mktCap": 100000000000,
+        "peRatio": 25.5,
+        "dividendYield": 0.015,
+        "fiftyTwoWeekHigh": round(base_price * 1.2, 2),
+        "fiftyTwoWeekLow": round(base_price * 0.8, 2),
+        "is_mock": True,  # Flag to indicate mock data
+        "news": [],
+        "earnings": [],
+        "related": ['AAPL', 'MSFT', 'GOOGL', 'AMZN'], # Fallback
+        "volatility": 15
+    }
+
+def fetch_stock_data_cached(symbol, period='1mo'):
+    symbol = symbol.upper()
+    cache_key = f"{symbol}_{period}"
     current_time = time.time()
     
+    # 1. Check Cache
     if cache_key in STOCK_CACHE:
         timestamp, data = STOCK_CACHE[cache_key]
         if current_time - timestamp < CACHE_DURATION:
             print(f"Serving {symbol} from cache")
-            return jsonify(data)
-    
-    # improved interval selection for different periods
+            data['from_cache'] = True
+            return data
+
+    # 2. Setup Interval
     interval = '1d'
-    if period == '1d':
-        interval = '5m'
-    elif period == '5d':
-        interval = '15m'
-    elif period == '1mo':
-        interval = '90m'
+    if period == '1d': interval = '5m'
+    elif period == '5d': interval = '15m'
+    elif period == '1mo': interval = '90m'
     
     try:
-        ticker = yf.Ticker(symbol.upper())
+        # 3. Try Fetching from API
+        print(f"Fetching {symbol} from Yahoo Finance...")
+        ticker = yf.Ticker(symbol)
         info = ticker.info
         
-        current_price = info.get('currentPrice') or info.get('regularMarketPrice', 0)
+        # Basic validation (yahoo sometimes returns empty info for bad requests)
+        curr_price = info.get('currentPrice') or info.get('regularMarketPrice')
+        
+        if not curr_price:
+            # Try to get price from history if info is missing
+            hist = ticker.history(period='1d')
+            if not hist.empty:
+                curr_price = hist['Close'].iloc[-1]
+            else:
+                raise Exception("No price data found")
+
+        current_price = float(curr_price)
         previous_close = info.get('previousClose', current_price)
         change = current_price - previous_close
         change_percent = (change / previous_close * 100) if previous_close else 0
@@ -420,11 +458,11 @@ def get_cached_stock(symbol):
         hist = ticker.history(period=period, interval=interval)
         
         if hist.empty:
-            return jsonify({"error": "No data found for symbol"}), 404
-        
+             raise Exception("Empty history")
+
         stock_info = {
-            "symbol": symbol.upper(),
-            "name": info.get('shortName', symbol.upper()),
+            "symbol": symbol,
+            "name": info.get('shortName', symbol),
             "price": round(current_price, 2),
             "change": round(change, 2),
             "changePercent": round(change_percent, 2),
@@ -451,18 +489,33 @@ def get_cached_stock(symbol):
             # Lists
             "news": ticker.news[:5] if hasattr(ticker, 'news') else [],
             "earnings": ticker.calendar.get('Earnings Date', []) if hasattr(ticker, 'calendar') and isinstance(ticker.calendar, dict) else [],
-            "related": get_related_stocks(symbol.upper(), info.get('sector')),
+            "related": get_related_stocks(symbol, info.get('sector')),
              # Risk Metrics
-            "volatility": hist['Close'].pct_change().std() * (252 ** 0.5) * 100 if len(hist) > 1 else 0 # Annualized volatility
+            "volatility": hist['Close'].pct_change().std() * (252 ** 0.5) * 100 if len(hist) > 1 else 0
         }
         
-        # Save to Cache
+        # 4. Save to Cache
         STOCK_CACHE[cache_key] = (current_time, stock_info)
-        
-        return jsonify(stock_info)
+        return stock_info
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error fetching {symbol}: {e}")
+        # 5. FALLBACK TO MOCK DATA (Rate Limit handling)
+        if "Too Many Requests" in str(e) or "429" in str(e) or "No data" in str(e):
+             print("Activiting Fallback Mode for Rate Limit")
+             mock_data = generate_mock_data(symbol, period)
+             return mock_data
+        
+        # Return mock data anyway for general errors to keep UI alive
+        return generate_mock_data(symbol, period)
+
+
+# ------------------ STOCK API ------------------
+@app.route('/stock/<symbol>')
+def get_stock_route(symbol):
+    period = request.args.get('period', '1mo')
+    data = fetch_stock_data_cached(symbol, period)
+    return jsonify(data)
 
 # ------------------ RUN SERVER ------------------
 if __name__ == '__main__':
